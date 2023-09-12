@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link  rel="stylesheet" type="text/css" href="./css/main.css" />
+  <link rel="stylesheet" href="./css/contextMenu.css">
+  <script src="./lib/vue.js"></script>
+  <!-- <script src="./lib/antv_g6_3.7.1.min.js"></script> -->
+  <!-- <script src="./lib/antv_g6_4.3.11.min.js"></script> -->
+  <script src="./lib/antv.g6-3.0.5-beta.9.js"></script>
+  <script src="./lib/modernizr-2.6.2.min.js"></script>
+
+  <script src="./jsForAntv3-0/utils.js"></script>
+  <script src="./jsForAntv3-0/customNode.js"></script>
+  <script src="./jsForAntv3-0/customEdge.js"></script>
+  <script src="./jsForAntv3-0/behaviorConfig/hover-node.js"></script>
+  <script src="./jsForAntv3-0/behaviorConfig/add-edge.js"></script>
+  <script src="./jsForAntv3-0/behaviorConfig/hover-edge.js"></script>
+  <script src="./jsForAntv3-0/behaviorConfig/select-node.js"></script>
+  <script src="./jsForAntv3-0/behaviorConfig/keyboard.js"></script>
+  <script src="./jsForAntv3-0/behavior.js"></script>
+  <script script src="./jsForAntv3-0/component/contextMenu.js"></script>
+</head>
+<body>
+  <div id="app">
+    <div class="list-container">
+      <transition-group name="drag" class="list" tag="ul">
+        <li
+          v-for="(item, index) in list"
+          :key="item.value"
+          :class="['list-item', { 'is-dragging': index === currentIndex }]"
+          @dragstart="dragStart(item, index)"
+          draggable
+        >
+          {{ item.label }}
+        </li>
+      </transition-group>
+      <div style="position: relative;">
+        <div
+          id="mount-node-container"
+          @dragover.prevent="dragOver"
+          @drop.prevent="dragDrop"
+        >
+        </div>
+        <context-menu
+            :visible="showNodeContextMenu"
+            :left="nodeContextMenuX"
+            :top="nodeContextMenuY"
+          ></context-menu>
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+  new Vue({
+    el: '#app',
+    components: {},
+    data() {
+      return {
+        list: [
+          { label: "列表1", value: 1, },
+          { label: "列表2", value: 2, },
+          { label: "列表3", value: 3, },
+          { label: "列表4", value: 4, },
+          { label: "列表5", value: 5, },
+          { label: "列表6", value: 6, },
+        ],
+        currentIndex: "",
+        currentItem: null,
+        graphData: {
+          // 点集
+          nodes: [
+          ],
+          // 边集
+          edges: [
+          ],
+        },
+        graphInstance: null,
+        isUpdate: false,
+        showNodeContextMenu: false,
+        nodeContextMenuX: 0,
+        nodeContextMenuY: 0,
+      };
+    },
+    created() {
+      this.bindEvent();
+    },
+    mounted(){
+      /**
+       * 注册自定义节点，自定义边以及自定义行为等
+       */
+      initBehaviors();
+      customNode.init();
+      customCircleAvatarNode.init();
+      customEdge.init();
+      this.initGraphInstance();
+    },
+    watch: {
+    },
+    methods: {
+      readData() {
+        let data = this.graphData;
+        if (data) {
+          this.graphInstance.read(data);
+        }
+      },
+      // 创建g6图实例
+      initGraphInstance(){
+        this.graphInstance = new G6.Graph({
+          container: 'mount-node-container', // 挂载容器
+          width: 800, // 图的宽度
+          height: 800, // 图的高度
+          linkCenter: true, // 设置边连入节点的中心（箭头指向节点中心）
+          defaultEdge: { // 边通用配置
+            type: 'quadratic', // 指定边的形状为二阶贝塞尔曲线
+            size: 1,
+          },
+          modes: {
+            default: [
+              'drag-node', 'hover-node', 'hover-edge', 'select-node',
+              'keyboard'
+            ], // 允许拖拽画布、放缩画布、拖拽节点等 'drag-canvas', 'zoom-canvas',
+            addEdge: ["add-edge"],
+          },
+          // 节点在各状态下的样式
+          nodeStateStyles: {
+            // hover 状态为 true 时的样式
+            hover: {
+              fill: 'lightsteelblue',
+              opacity: 0.2,
+            },
+            // click 状态为 true 时的样式
+            click: {
+              stroke: '#000',
+              lineWidth: 3,
+            },
+          },
+        });
+        // 监听鼠标进入节点
+        this.graphInstance.on('node:mouseenter', (e) => {
+          const nodeItem = e.item;
+          // 设置目标节点的 hover 状态 为 true
+          this.graphInstance.setItemState(nodeItem, 'hover', true);
+        });
+        // 监听鼠标离开节点
+        this.graphInstance.on('node:mouseleave', (e) => {
+          const nodeItem = e.item;
+          // 设置目标节点的 hover 状态 false
+          this.graphInstance.setItemState(nodeItem, 'hover', false);
+          this.showNodeContextMenu = false;
+        });
+        // 监听节点上面右键菜单事件
+        this.graphInstance.on('node:contextmenu', evt => {
+          console.log('in node context menu')
+          const { item } = evt
+          const model = item.getModel()
+          const { x, y } = model
+          const point = this.graphInstance.getCanvasByPoint(x, y);
+          console.log(item, model);
+          this.showNodeContextMenu = true;
+          this.nodeContextMenuX = x;
+          this.nodeContextMenuY = y;
+        })
+        this.readData(); // read 方法的功能相当于 data 和 render 方法的结合
+        // this.graphInstance.data(this.graphData); // 读取数据源到图上
+        // this.graphInstance.render(); // 渲染图
+      },
+      bindEvent() {
+        // 边添加的事件绑定
+        globalEventBus.$on("addItem", item => {
+          console.log(item, 'addNodeEdge');
+          // 添加边（type: 'edge'）
+          this.graphInstance.add(item.type, item);
+        });
+
+        // 删除节点|边
+        globalEventBus.$on("deleteItem", () => {
+          this.handleDelete();
+        });
+      },
+      dragStart(val, i) {
+        this.currentIndex = i;
+        this.currentItem = val;
+        console.log('dragStart', val, i);
+      },
+      dragOver() {
+        console.log('dragOver');
+      },
+      dragDrop(e) {
+        console.log('dragDrop', e.offsetX, e.offsetY);
+        this.addNode(e);
+      },
+      addNode(event){
+        if(!this.currentItem) return;
+        const currentNodeLength = this.graphData.nodes.length;
+        const currentNode = {
+          name: "测试节点",
+          label: this.currentItem.label || "测试节点",
+          // size: [170, 34],
+          type: "node",
+          x: event.offsetX,
+          y: event.offsetY,
+          shape: 'customCircleAvatar',
+          color: "#1890ff",
+          backImage: "https://gw.alipayobjects.com/mdn/rms_f8c6a0/afts/img/A*95GYRI0zPx8AAAAAAAAAAABkARQnAQ",
+          // image: "https://gw.alipayobjects.com/zos/rmsportal/czNEJAmyDpclFaSucYWB.svg",
+          // stateImage: okSvg,
+          inPoints: [[0, 0.5]],
+          outPoints: [[1, 0.5]]
+        };
+        // 添加节点（type: 'node'）
+        this.graphInstance.add(currentNode.type, currentNode);
+      },
+      handleDelete(){
+        let selectedItem = this.graphInstance.findAllByState("node", "selected");
+        selectedItem = selectedItem.concat(
+          ...this.graphInstance.findAllByState("edge", "selected")
+        );
+      }
+    }
+  })
+</script>
+</html>

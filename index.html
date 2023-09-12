@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link  rel="stylesheet" type="text/css" href="./css/main.css" />
+  <script src="./lib/vue.js"></script>
+  <!-- <script src="./lib/antv_g6_3.7.1.min.js"></script> -->
+  <!-- <script src="./lib/antv_g6_4.3.11.min.js"></script> -->
+  <script src="./lib/antv.g6-3.0.5-beta.9.js"></script>
+  <script src="./js/utils.js"></script>
+  <script src="./js/customNode.js"></script>
+  <script src="./js/customEdge.js"></script>
+  <script src="./js/behaviorConfig/hover-node.js"></script>
+  <script src="./js/behaviorConfig/add-edge.js"></script>
+  <script src="./js/behavior.js"></script>
+</head>
+<body>
+  <div id="app">
+    <div class="list-container">
+      <transition-group name="drag" class="list" tag="ul">
+        <li
+          v-for="(item, index) in list"
+          :key="item.value"
+          :class="['list-item', { 'is-dragging': index === currentIndex }]"
+          @dragstart="dragStart(item, index)"
+          draggable
+        >
+          {{ item.label }}
+        </li>
+      </transition-group>
+      <div
+        id="mount-node-container"
+        @dragover.prevent="dragOver()"
+        @drop="dragDrop"
+      >
+  
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+  const edgeCommonStyle = {
+    // endArrow: true,
+    lineWidth: 1, // 线宽
+    stroke: '#BCBCBC', // 线的颜色
+    // 设置终点箭头
+    endArrow: {
+       // 使用内置箭头路径函数，参数为箭头的 宽度、长度、偏移量（默认为 0，与 d 对应）
+      path: G6.Arrow.vee(12, 16, 39),
+      d: 39,
+      fill: '#c3c3c3' // 箭头填充为实体有颜色
+    },
+  };
+  new Vue({
+    el: '#app',
+    data() {
+      return {
+        list: [
+          { label: "列表1", value: 1, },
+          { label: "列表2", value: 2, },
+          { label: "列表3", value: 3, },
+          { label: "列表4", value: 4, },
+          { label: "列表5", value: 5, },
+          { label: "列表6", value: 6, },
+        ],
+        currentIndex: "",
+        currentItem: null,
+        graphData: {
+          // 点集
+          nodes: [
+            // {
+            //   id: 'node1', // String，该节点存在则必须，节点的唯一标识
+            //   x: 100, // Number，可选，节点位置的 x 值
+            //   y: 200, // Number，可选，节点位置的 y 值
+            //   style: {
+            //    linkPoints: {
+            //      top: true,
+            //      bottom: true,
+            //      left: true,
+            //      right: true,
+            //      // ... 四个圆的样式可以在这里指定
+            //    },
+            //   },
+            //  label: '节点B',
+            //  img: "https://gw.alipayobjects.com/mdn/rms_f8c6a0/afts/img/A*95GYRI0zPx8AAAAAAAAAAABkARQnAQ",
+            //  该节点可选的连接点集合，该点有两个可选的连接点
+            //  anchorPoints: [
+            //     [0, 1],
+            //     [0.5, 1],
+            //   ],
+            // },
+            // {
+            //   id: 'node2', // String，该节点存在则必须，节点的唯一标识
+            //   x: 300, // Number，可选，节点位置的 x 值
+            //   y: 200, // Number，可选，节点位置的 y 值
+            // },
+          ],
+          // 边集
+          edges: [
+            // {
+            //   source: 'node1', // String，必须，起始点 id
+            //   target: 'node2', // String，必须，目标点 id
+            //   style: edgeCommonStyle,
+            // },
+          ],
+        },
+        graphInstance: null,
+        isUpdate: false,
+      };
+    },
+    mounted(){
+      /**
+       * 注册自定义节点，自定义边以及自定义行为等
+       */
+      initBehaviors();
+      customNode.init();
+      customCircleAvatarNode.init();
+      customEdge.init();
+      this.initGraphInstance();
+    },
+    watch: {
+      isUpdate(val){
+        console.log(val, this.graphData, 'in watch handler')
+        if(val){
+          this.graphInstance.data(this.graphData); // 读取数据源到图上
+          this.graphInstance.render(); // 渲染图
+          this.isUpdate = false;
+        }
+      }
+    },
+    methods: {
+      // 创建g6图实例
+      initGraphInstance(){
+        this.graphInstance = new G6.Graph({
+          container: 'mount-node-container', // 挂载容器
+          width: 800, // 图的宽度
+          height: 500, // 图的高度
+          linkCenter: true, // 设置边连入节点的中心（箭头指向节点中心）
+          // layout: {
+          //   type: 'force', // force力导布局
+          //   linkDistance: 100, // 指定边距离
+          // },
+          // defaultNode: { // 节点通用配置
+          //   type: 'avatar',
+          //   // type: 'circle',
+          //   size: 80,
+          //   fontHeight: 20
+          // },
+          defaultEdge: { // 边通用配置
+            type: 'quadratic', // 指定边的形状为二阶贝塞尔曲线
+            size: 1,
+          },
+          modes: {
+            default: ['drag-canvas', 'zoom-canvas', 'drag-node', 'hover-node'], // 允许拖拽画布、放缩画布、拖拽节点
+            addEdge: ["add-edge"],
+          },
+          // 节点在各状态下的样式
+          nodeStateStyles: {
+            // hover 状态为 true 时的样式
+            hover: {
+              fill: 'lightsteelblue',
+              opacity: 0.2,
+            },
+            // click 状态为 true 时的样式
+            click: {
+              stroke: '#000',
+              lineWidth: 3,
+            },
+          },
+        });
+        // 监听鼠标进入节点
+        this.graphInstance.on('node:mouseenter', (e) => {
+          const nodeItem = e.item;
+          // 设置目标节点的 hover 状态 为 true
+          this.graphInstance.setItemState(nodeItem, 'hover', true);
+        });
+        // 监听鼠标离开节点
+        this.graphInstance.on('node:mouseleave', (e) => {
+          const nodeItem = e.item;
+          // 设置目标节点的 hover 状态 false
+          this.graphInstance.setItemState(nodeItem, 'hover', false);
+        });
+        this.graphInstance.data(this.graphData); // 读取数据源到图上
+        this.graphInstance.render(); // 渲染图
+      },
+      
+      dragStart(val, i) {
+        this.currentIndex = i;
+        this.currentItem = val;
+        console.log('dragStart', val, i);
+      },
+      dragOver() {
+        console.log('dragOver');
+      },
+      dragDrop(e) {
+        console.log('dragDrop', e.offsetX, e.offsetY);
+        this.addNode(e);
+      },
+      addNode(event){
+        if(!this.currentItem) return;
+        const currentNodeLength = this.graphData.nodes.length;
+        // const currentNode = {
+        //   id: 'node' + (currentNodeLength + 1), // String，该节点存在则必须，节点的唯一标识
+        //   x: event.offsetX, // Number，可选，节点位置的 x 值
+        //   y: event.offsetY, // Number，可选，节点位置的 y 值
+        //   img: "https://gw.alipayobjects.com/mdn/rms_f8c6a0/afts/img/A*95GYRI0zPx8AAAAAAAAAAABkARQnAQ",
+        //   // style: {
+        //   //   linkPoints: {
+        //   //     top: true,
+        //   //     bottom: true,
+        //   //     left: false,
+        //   //     right: false,
+        //   //     // ... 四个圆的样式可以在这里指定
+        //   //   },
+        //   // },
+        //   anchorPoints: [
+        //     [0, 1],
+        //     [0.5, 1],
+        //   ],
+        //   label: this.currentItem.label || '节点',
+        // };
+        const currentNode = {
+          name: "测试节点",
+          label: this.currentItem.label || "测试节点",
+          // size: [170, 34],
+          type: "node",
+          x: event.offsetX,
+          y: event.offsetY,
+          // shape: "customNode",
+          shape: 'customCircleAvatar',
+          color: "#1890ff",
+          backImage: "https://gw.alipayobjects.com/mdn/rms_f8c6a0/afts/img/A*95GYRI0zPx8AAAAAAAAAAABkARQnAQ",
+          // image: "https://gw.alipayobjects.com/zos/rmsportal/czNEJAmyDpclFaSucYWB.svg",
+          // stateImage: okSvg,
+          inPoints: [[0, 0.5]],
+          outPoints: [[1, 0.5]]
+        };
+        this.graphData.nodes.push(currentNode);
+        this.isUpdate = true;
+      }
+    }
+  })
+</script>
+</html>
