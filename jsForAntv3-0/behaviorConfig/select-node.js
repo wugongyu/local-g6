@@ -1,5 +1,4 @@
-
-const selectNodeConfig = {
+const selectNodeConfig = (eventBus) => ({
     getDefaultCfg() {
         return {
             multiple: true,
@@ -38,12 +37,12 @@ const selectNodeConfig = {
                 graph.setItemState(item, 'selected', false);
             }
           
-            globalEventBus.$emit('nodeselectchange', { target: item, select: false });
+            eventBus.$emit('nodeselectchange', { target: item, select: false });
         } else {
             if (self.shouldUpdate.call(self, e)) {
                 graph.setItemState(item, 'selected', true);
             }
-            globalEventBus.$emit('nodeselectchange', { target: item, select: true });
+            eventBus.$emit('nodeselectchange', { target: item, select: true });
         }
         graph.setAutoPaint(autoPaint);
         graph.paint();
@@ -55,13 +54,13 @@ const selectNodeConfig = {
         const selected = graph.findAllByState('node', 'selected');
         G6.Util.each(selected, node => {
             graph.setItemState(node, 'selected', false);
-            globalEventBus.$emit('nodeselectchange', { target: node, select: false });
+            eventBus.$emit('nodeselectchange', { target: node, select: false });
         });
 
         const selectedEdges = graph.findAllByState('edge', 'selected');
         G6.Util.each(selectedEdges, edge => {
             graph.setItemState(edge, 'selected', false);
-            globalEventBus.$emit('nodeselectchange', { target: edge, select: false });
+            eventBus.$emit('nodeselectchange', { target: edge, select: false });
         })
 
         graph.paint();
@@ -82,4 +81,6 @@ const selectNodeConfig = {
     onKeyUp() {
         this.keydown = false;
     }
-};
+});
+
+export default selectNodeConfig;

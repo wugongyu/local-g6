@@ -12,16 +12,10 @@
   <!-- <script src="./lib/antv_g6_4.3.11.min.js"></script> -->
   <script src="./lib/antv.g6-3.0.5-beta.9.js"></script>
   <script src="./lib/modernizr-2.6.2.min.js"></script>
-
-  <script src="./jsForAntv3-0/utils.js"></script>
+  <script src="./dist/main.js"></script>
+  <script src="./jsForAntv3-0/utils/utils.js"></script>
   <script src="./jsForAntv3-0/customNode.js"></script>
   <script src="./jsForAntv3-0/customEdge.js"></script>
-  <script src="./jsForAntv3-0/behaviorConfig/hover-node.js"></script>
-  <script src="./jsForAntv3-0/behaviorConfig/add-edge.js"></script>
-  <script src="./jsForAntv3-0/behaviorConfig/hover-edge.js"></script>
-  <script src="./jsForAntv3-0/behaviorConfig/select-node.js"></script>
-  <script src="./jsForAntv3-0/behaviorConfig/keyboard.js"></script>
-  <script src="./jsForAntv3-0/behavior.js"></script>
   <script script src="./jsForAntv3-0/component/contextMenu.js"></script>
 </head>
 <body>
@@ -49,6 +43,7 @@
             :visible="showNodeContextMenu"
             :left="nodeContextMenuX"
             :top="nodeContextMenuY"
+            @handle-menu-click="handleMenuClick"
           ></context-menu>
       </div>
     </div>
@@ -83,6 +78,7 @@
         showNodeContextMenu: false,
         nodeContextMenuX: 0,
         nodeContextMenuY: 0,
+        currentNode: null,
       };
     },
     created() {
@@ -92,15 +88,24 @@
       /**
        * 注册自定义节点，自定义边以及自定义行为等
        */
-      initBehaviors();
+      this.initBehaviors();
       customNode.init();
-      customCircleAvatarNode.init();
       customEdge.init();
       this.initGraphInstance();
     },
     watch: {
     },
     methods: {
+      /**
+       * @param eventBus vue定义的全局事件对象，必传
+       * 
+      */
+      initBehaviors() {
+        console.log(window)
+        for (let key in behaviors) {
+          G6.registerBehavior(key, behaviors[key](globalEventBus))
+        }
+      },
       readData() {
         let data = this.graphData;
         if (data) {
@@ -126,7 +131,7 @@
             addEdge: ["add-edge"],
           },
           // 节点在各状态下的样式
-          nodeStateStyles: {
+          nodeStyle: {
             // hover 状态为 true 时的样式
             hover: {
               fill: 'lightsteelblue',
@@ -155,14 +160,15 @@
         // 监听节点上面右键菜单事件
         this.graphInstance.on('node:contextmenu', evt => {
           console.log('in node context menu')
-          const { item } = evt
-          const model = item.getModel()
-          const { x, y } = model
+          const { item } = evt;
+          const model = item.getModel();
+          const { x, y } = model;
           const point = this.graphInstance.getCanvasByPoint(x, y);
           console.log(item, model);
           this.showNodeContextMenu = true;
           this.nodeContextMenuX = x;
           this.nodeContextMenuY = y;
+          this.currentNode = model;
         })
         this.readData(); // read 方法的功能相当于 data 和 render 方法的结合
         // this.graphInstance.data(this.graphData); // 读取数据源到图上
@@ -219,6 +225,10 @@
         selectedItem = selectedItem.concat(
           ...this.graphInstance.findAllByState("edge", "selected")
         );
+        console.log(selectedItem);
+      },
+      handleMenuClick(menu){
+        console.log(menu, this.currentNode);
       }
     }
   })

@@ -1,4 +1,4 @@
-const keyboardConfig = {
+const keyboardConfig = (eventBus) => ({
     getDefaultCfg() {
         return {
             backKeyCode: 8,
@@ -18,7 +18,7 @@ const keyboardConfig = {
         switch (code) {
             case this.deleteKeyCode:
             case this.backKeyCode:
-                globalEventBus.$emit('deleteItem')
+                eventBus.$emit('deleteItem')
                 break;
             default:
                 break;
@@ -27,4 +27,6 @@ const keyboardConfig = {
     onKeyUp() {
         this.keydown = false;
     }
-};
+});
+
+export default keyboardConfig;

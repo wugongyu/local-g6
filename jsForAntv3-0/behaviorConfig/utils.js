@@ -10,5 +10,5 @@ function getUuid() {
   let uuid = s.join("")
   return uuid;
 }
-// 全局事件对象
-const globalEventBus = new Vue();
+
+export { getUuid };

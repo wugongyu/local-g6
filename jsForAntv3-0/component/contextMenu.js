@@ -81,9 +81,12 @@ const component1 = Vue.component('context-menu', {
 	      '-ms-transform': transformStr,
       };
     },
-    // 获取菜单的定位值
+    // 获取菜单容器的定位值
     getPositionValue(value){
       return (value - this.selfContextWrapper / 2 + this.nodeWidth / 2) + 'px';
+    },
+    handleMenuClick(menu){
+      this.$emit('handle-menu-click', menu)
     },
   },
   template: `
@@ -101,7 +104,7 @@ const component1 = Vue.component('context-menu', {
           class="cn-wrapper-list-item"
           :style="getNodeRotateStyle(menus, menuIndex, 'div')"
         >
-          <a :style="getNodeRotateStyle(menus, menuIndex, 'alink')">
+          <a :style="getNodeRotateStyle(menus, menuIndex, 'alink')" @click="handleMenuClick(menu)">
             
             <span class="text-wrapper" :style="getNodeRotateStyle(menus, menuIndex, 'span')">
               {{ menu.label }}

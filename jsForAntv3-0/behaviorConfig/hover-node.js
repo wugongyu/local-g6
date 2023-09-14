@@ -1,5 +1,6 @@
+
 // 鼠标移入、移出、点击行为
-const hoverNodeConfig = {
+const hoverNodeConfig = (eventBus) => ({
   getEvents: function() {
       return {
           'node:mouseover': 'onMouseover',
@@ -70,4 +71,6 @@ const hoverNodeConfig = {
     }
   },
 
-};
+});
+
+export default hoverNodeConfig;

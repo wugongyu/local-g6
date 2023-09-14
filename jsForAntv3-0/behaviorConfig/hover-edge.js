@@ -1,6 +1,4 @@
-
-
-const hoverEdgeConfig = {
+const hoverEdgeConfig = (eventBus) => ({
     getEvents() {
         return {
             'edge:mouseover': 'onMouseover',
@@ -59,15 +57,17 @@ const hoverEdgeConfig = {
             if (self.shouldUpdate.call(self, e)) {
                 graph.setItemState(item, 'selected', false);
             }
-            globalEventBus.$emit('nodeselectchange', { target: item, select: false });
+            eventBus.$emit('nodeselectchange', { target: item, select: false });
         } else {
             if (self.shouldUpdate.call(self, e)) {
                 graph.setItemState(item, 'selected', true);
             }
-            globalEventBus.$emit('nodeselectchange', { target: item, select: true });
+            eventBus.$emit('nodeselectchange', { target: item, select: true });
         }
         graph.setAutoPaint(autoPaint);
         graph.paint();
     },
 
-};
+});
+
+export default hoverEdgeConfig;

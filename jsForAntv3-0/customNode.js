@@ -123,9 +123,9 @@ function setStateFun(name, value, item) {
   }
 }
 
-
+// 自定义节点
 const customNode = {
-  init() {
+  init: function(){
     console.log('customNode init')
     G6.registerNode("customNode", {
       draw(cfg, group) {
@@ -250,12 +250,8 @@ const customNode = {
       //设置状态
       setState: setStateFun,
     });
-  }
-}
 
-// 自定义节点
-const customCircleAvatarNode = {
-  init: function(){
+
     console.log('customCircleAvatar init', G6)
     G6.registerNode(
       'customCircleAvatar', 
