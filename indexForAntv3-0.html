@@ -12,11 +12,12 @@
   <!-- <script src="./lib/antv_g6_4.3.11.min.js"></script> -->
   <script src="./lib/antv.g6-3.0.5-beta.9.js"></script>
   <script src="./lib/modernizr-2.6.2.min.js"></script>
-  <script src="./dist/main.js"></script>
+  <script src="./dist/behavior.js"></script>
   <script src="./jsForAntv3-0/utils/utils.js"></script>
   <script src="./jsForAntv3-0/customNode.js"></script>
   <script src="./jsForAntv3-0/customEdge.js"></script>
-  <script script src="./jsForAntv3-0/component/contextMenu.js"></script>
+  <!-- <script src="./jsForAntv3-0/component/contextMenu.js"></script> -->
+  <script src="./dist/customComponents.js"></script>
 </head>
 <body>
   <div id="app">
@@ -50,6 +51,13 @@
   </div>
 </body>
 <script>
+  console.log(customComponents);
+  (function() {
+    for (let key in customComponents) {
+      Vue.component(key, customComponents[key])
+    }
+  })();
+  console.log(Vue.components)
   new Vue({
     el: '#app',
     components: {},
@@ -101,7 +109,6 @@
        * 
       */
       initBehaviors() {
-        console.log(window)
         for (let key in behaviors) {
           G6.registerBehavior(key, behaviors[key](globalEventBus))
         }

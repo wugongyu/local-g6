@@ -9,7 +9,7 @@ const defaultMenus = [
   { label: '数据聚合', value: 'dataIn' },
   // { label: '数据1', value: 'dataIn' },
 ]
-const component1 = Vue.component('context-menu', {
+const contextMenuComponentConfig = {
   props: {
     visible: {
       type: Boolean,
@@ -114,4 +114,6 @@ const component1 = Vue.component('context-menu', {
       </div>
     </div>
   `,
-});
+};
+
+export { contextMenuComponentConfig };
