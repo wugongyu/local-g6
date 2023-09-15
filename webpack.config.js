@@ -3,7 +3,8 @@ const path = require('path')
 // eslint-disable-next-line prefer-destructuring
 const resolve = path.resolve;
 const HTMLPlugin = require('html-webpack-plugin');
-const UglifyJSWebpackPlguin  = require('uglifyjs-webpack-plugin')
+const UglifyJSWebpackPlguin  = require('uglifyjs-webpack-plugin');
+const  {VueLoaderPlugin} = require('vue-loader');
 
 module.exports = {
   entry: {
@@ -33,6 +34,10 @@ module.exports = {
   },
   module: {
     rules: [
+      {
+        test: /\.vue$/,
+        use: 'vue-loader',
+      },
       {
         test: /\.(js|jsx)$/,
         use: {
@@ -78,7 +83,8 @@ module.exports = {
         ecma: 5,
         ie8: true
       }
-    })
+    }),
+    new VueLoaderPlugin()
   ],
   devtool: 'cheap-module-eval-source-map',
   devServer: {

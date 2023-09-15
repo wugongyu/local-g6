@@ -51,13 +51,7 @@
   </div>
 </body>
 <script>
-  console.log(customComponents);
-  (function() {
-    for (let key in customComponents) {
-      Vue.component(key, customComponents[key])
-    }
-  })();
-  console.log(Vue.components)
+  Vue.use(customComponentsPlugin);
   new Vue({
     el: '#app',
     components: {},
