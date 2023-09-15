@@ -45,7 +45,7 @@
             :left="nodeContextMenuX"
             :top="nodeContextMenuY"
             @handle-menu-click="handleMenuClick"
-          ></context-menu>
+        ></context-menu>
       </div>
     </div>
   </div>
@@ -58,7 +58,7 @@
     data() {
       return {
         list: [
-          { label: "列表1", value: 1, },
+          { label: "列表1", value: 1  },
           { label: "列表2", value: 2, },
           { label: "列表3", value: 3, },
           { label: "列表4", value: 4, },
@@ -98,10 +98,6 @@
     watch: {
     },
     methods: {
-      /**
-       * @param eventBus vue定义的全局事件对象，必传
-       * 
-      */
       initBehaviors() {
         for (let key in behaviors) {
           G6.registerBehavior(key, behaviors[key](globalEventBus))

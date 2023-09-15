@@ -3,7 +3,7 @@ const path = require('path')
 // eslint-disable-next-line prefer-destructuring
 const resolve = path.resolve;
 const HTMLPlugin = require('html-webpack-plugin');
-const UglifyJSWebpackPlguin  = require('uglifyjs-webpack-plugin');
+const UglifyJSWebpackPlugin  = require('uglifyjs-webpack-plugin');
 const  {VueLoaderPlugin} = require('vue-loader');
 
 module.exports = {
@@ -30,7 +30,7 @@ module.exports = {
   },
   resolve: {
     // Add `.ts` as a resolvable extension.
-    extensions: ['.ts', '.js'],
+    extensions: ['.ts', '.js', '.vue'],
   },
   module: {
     rules: [
@@ -77,7 +77,7 @@ module.exports = {
     //   template: './pages/index.html'
     // }),
     // 更多配置项参考：https://www.webpackjs.com/plugins/uglifyjs-webpack-plugin/
-    new UglifyJSWebpackPlguin({
+    new UglifyJSWebpackPlugin({
       exclude: /node_modules/,
       uglifyOptions: {
         ecma: 5,
