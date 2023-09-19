@@ -24,6 +24,7 @@
 }
 /*
 *cover to prevent extra space of anchors from being clickable*
+【注意var变量为css3新特性，不兼容ie】
 */
 .csstransforms .cn-wrapper:after{
   content:".";
@@ -33,6 +34,10 @@
   height:180px;
 	margin-left: -90px;
   margin-top: -90px;
+	width: var(--wrapperAfterSize);
+	height: var(--wrapperAfterSize);
+	margin-left: var(--wrapperAfterSizMargin);
+  margin-top: var(--wrapperAfterSizMargin);
   position: absolute;
   left: 50%;
 	top:50%;

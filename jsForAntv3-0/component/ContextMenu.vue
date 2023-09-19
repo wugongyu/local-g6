@@ -136,6 +136,11 @@ export default {
   },
   mounted(){
   },
+  computed: {
+    mainItemAfterWrapperSize(){
+      return this.listItemAlinkSize * this.gradientPercent * 0.01;
+    }
+  },  
   methods: {
     getAnglesByData(arr, index, startAngle){
       startAngle = startAngle || this.startAngle;
@@ -220,6 +225,8 @@ export default {
       const mainWrapperStyle = { 
         'top': this.getPositionValue(this.top) + 'px',
         'left': this.getPositionValue(this.left) + 'px',
+        '--wrapperAfterSize': this.mainItemAfterWrapperSize + 'px',
+        '--wrapperAfterSizMargin': -this.mainItemAfterWrapperSize / 2 + 'px',
         ...this.getWidthAndHeight(this.menuWrapperSize),
       };
       return mainWrapperStyle;
