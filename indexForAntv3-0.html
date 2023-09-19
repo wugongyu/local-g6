@@ -157,13 +157,12 @@
         });
         // 监听节点上面右键菜单事件
         this.graphInstance.on('node:contextmenu', evt => {
+          this.currentNode = null;
           this.showNodeContextMenu = false; // 关闭其他的节点菜单
-          console.log('in node context menu')
           const { item } = evt;
           const model = item.getModel();
           const { x, y } = model;
           const point = this.graphInstance.getCanvasByPoint(x, y);
-          console.log(item, model);
           this.showNodeContextMenu = true;
           this.nodeContextMenuX = x;
           this.nodeContextMenuY = y;

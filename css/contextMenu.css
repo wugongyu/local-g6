@@ -1,8 +1,6 @@
 .csstransforms .cn-wrapper {
   position: absolute;
 	z-index: 10;
-	/* width: 432px;
-	height: 432px; */
 	border-radius: 50%;
 	background: transparent;
 	opacity: 0;
@@ -15,6 +13,10 @@
 	transform: scale(0.1);
 	pointer-events: none;
 	overflow: hidden;
+
+	/* for debug */
+	/* border: 1px solid black;
+	box-sizing: border-box; */
 }
 .csstransforms .cn-wrapper .cn-wrapper-list {
 	width: 100%;
@@ -29,14 +31,18 @@
   font-size:20px;
   width:180px;
   height:180px;
+	margin-left: -90px;
+  margin-top: -90px;
   position: absolute;
   left: 50%;
-  margin-left: -25%;
-  top:50%;
-  margin-top: -25%;
+	top:50%;
   border-radius: 50%;
   z-index:10;
   color: transparent;
+
+	/* for debug */
+	/* border: 1px solid black;
+	box-sizing: border-box; */
 }
 
 .csstransforms .opened-nav {
@@ -79,10 +85,7 @@
 
 .csstransforms .cn-wrapper .cn-wrapper-list-item {
   position: absolute;
-  left: 50%;
   overflow: hidden;
-  margin-top: 2%;
-	margin-left: -48%;
   -webkit-transition: all .3s ease;
   -moz-transition: all .3s ease;
   transition: all .3s ease;
@@ -90,6 +93,10 @@
   -moz-transform-origin: 100% 100%;
   transform-origin: 100% 100%;
   pointer-events: none;
+
+	/* for debug */
+	/* border: 1px solid black;
+	box-sizing: border-box; */
 }
 .csstransforms .cn-wrapper .cn-wrapper-list-item .list-item-alink {
   position: absolute;
@@ -106,8 +113,8 @@
 }
 .csstransforms .cn-wrapper .cn-wrapper-list-item .list-item-alink span.text-wrapper {
   position: relative;
-	top: 40px;
-	left: 16px;
+	top: 30px;
+	left: 0px; /* 16px */
 	display: block;
 	font-size: 12px;
 	/* font-weight: 700; */

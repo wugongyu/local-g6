@@ -65,10 +65,10 @@ const defaultMenus = [
 ];
 
 const defaultMenuSize = 432;
-// const defaultWrapperListItemSize = 180;
-// const defaultListItemAlinkSize = 280;
-const defaultWrapperListItemSize = 200;
-const defaultListItemAlinkSize = 310;
+const defaultWrapperListItemSize = 180;
+const defaultListItemAlinkSize = 280;
+// const defaultWrapperListItemSize = 200;
+// const defaultListItemAlinkSize = 310;
 
 const defaultBgColor = '#c9e9fc';
 const defaultBgActiveColor = '#0499d7';
@@ -176,9 +176,9 @@ export default {
       if(['alink', 'listItemWrapper'].includes(type)){
         const sizeObj = this.getWidthAndHeight(type === 'alink' ? this.listItemAlinkSize : this.wrapperListItemSize);
         const targetAlinkBgStyle = type === 'alink' ? this.getBackground(arr[index]) : {};
-        // const targetWrapperPositionStyle = type === 'listItemWrapper' ? this.getWrapperPositionValue() : {};
+        const targetWrapperPositionStyle = type === 'listItemWrapper' ? this.getWrapperPositionValue() : {};
         return {
-          // ...targetWrapperPositionStyle,
+          ...targetWrapperPositionStyle,
           ...sizeObj,
           ...commonObj,
           ...targetAlinkBgStyle,
@@ -199,7 +199,9 @@ export default {
     // 获取菜单容器的定位值
     getPositionValue(value){
       const containerRadius = this.menuWrapperSize / 2;
-      return (value - containerRadius + this.nodeWidth / 2);
+      // return (value - containerRadius + this.nodeWidth / 2);
+      // return value - containerRadius;
+      return (value - containerRadius + this.nodeWidth / 3);
     },
     getSubListNodeStyle(parentArr, parentIndex, arr, index, type){
       const parentData = this.getAnglesByData(parentArr, parentIndex);
@@ -215,11 +217,12 @@ export default {
       }
     },
     getMainWrapperStyle(){
-      return { 
+      const mainWrapperStyle = { 
         'top': this.getPositionValue(this.top) + 'px',
         'left': this.getPositionValue(this.left) + 'px',
         ...this.getWidthAndHeight(this.menuWrapperSize),
       };
+      return mainWrapperStyle;
     },
     getBackground(menuItem){
       const targetColor = (menuItem) && (this.currentActiveMenu) && (menuItem.value === this.currentActiveMenu.value) ? this.bgActiveColor : this.bgColor;
@@ -233,19 +236,11 @@ export default {
       }
     },
     getWrapperPositionValue(){
-      const mainWrapperPositionTop = this.getPositionValue(this.top);
-      const mainWrapperPositionLeft = this.getPositionValue(this.left);
-      const distance = this.menuWrapperSize / 2 - this.wrapperListItemSize / 2;
-      const targetTop = (mainWrapperPositionTop + distance);
-      const targetLeft = (mainWrapperPositionLeft + distance);
-      const transformOriginStr = `${targetTop + this.wrapperListItemSize / 2}px ${targetLeft + this.wrapperListItemSize / 2}px`;
+      const containerRadius = this.menuWrapperSize / 2;
+      const positionTopAndLeft = containerRadius - this.wrapperListItemSize;
       return {
-        position: 'absolute',
-        'top': targetTop + 'px',
-	      'left': targetLeft + 'px',
-        '-webkit-transform-origin': transformOriginStr,
-        '-moz-transform-origin': transformOriginStr,
-        'transform-origin': transformOriginStr,
+        'top': positionTopAndLeft + 'px',
+	      'left': positionTopAndLeft + 'px',
       }
     }
   },
