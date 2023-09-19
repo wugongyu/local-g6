@@ -1,0 +1,19 @@
+
+._1R7v9ZX6LoHYMyyFjqylfP[data-v-3e0555e2] {
+  animation: hC5n-fYmsRqLQmSdd5-gV 2s;
+}
+._1TifjK6tLXrPOU6LjLQPzf[data-v-3e0555e2] {
+  animation: hC5n-fYmsRqLQmSdd5-gV 2s reverse;
+}
+@keyframes hC5n-fYmsRqLQmSdd5-gV {
+0% {
+    transform: scale(0);
+}
+50% {
+    transform: scale(0.5);
+}
+100% {
+    transform: scale(1);
+}
+}
+

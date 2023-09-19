@@ -7,6 +7,7 @@
   <title>Document</title>
   <link  rel="stylesheet" type="text/css" href="./css/main.css" />
   <link rel="stylesheet" href="./css/contextMenu.css">
+  <link rel="stylesheet" href="./dist/css/customComponents.css">
   <script src="./lib/vue.js"></script>
   <!-- <script src="./lib/antv_g6_3.7.1.min.js"></script> -->
   <!-- <script src="./lib/antv_g6_4.3.11.min.js"></script> -->
@@ -156,6 +157,7 @@
         });
         // 监听节点上面右键菜单事件
         this.graphInstance.on('node:contextmenu', evt => {
+          this.showNodeContextMenu = false; // 关闭其他的节点菜单
           console.log('in node context menu')
           const { item } = evt;
           const model = item.getModel();

@@ -4,6 +4,7 @@ const path = require('path')
 const resolve = path.resolve;
 const HTMLPlugin = require('html-webpack-plugin');
 const UglifyJSWebpackPlugin  = require('uglifyjs-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const  {VueLoaderPlugin} = require('vue-loader');
 
 module.exports = {
@@ -60,6 +61,7 @@ module.exports = {
         test: /\.(css)$/,
         use: [
           'style-loader',
+          MiniCssExtractPlugin.loader, // 将css独立打包成文件
           {
             loader: 'css-loader',
             options: {
@@ -84,7 +86,10 @@ module.exports = {
         ie8: true
       }
     }),
-    new VueLoaderPlugin()
+    new VueLoaderPlugin(),
+    new MiniCssExtractPlugin({
+      filename: 'css/[name].css',
+    })
   ],
   devtool: 'cheap-module-eval-source-map',
   devServer: {
